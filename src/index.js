@@ -6,11 +6,11 @@ const port = 3000;
 
 app.use(express.static('public'));
 
-app.get('/add', (req, res) => {
-    const num1 = parseInt(req.query.num1);
-    const num2 = parseInt(req.query.num2);
+app.get('/add/:num1/:num2', (req, res) => {
+    const num1 = parseInt(req.params.num1);
+    const num2 = parseInt(req.params.num2);
     const sum = num1 + num2;
-    res.send({ sum });
+    res.json({ sum });
 });
 
 app.listen(port, () => {
