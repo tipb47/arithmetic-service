@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const {add} = require("./arithmetica")
 const app = express();
 app.use(cors());
 const port = process.env.PORT || 3000;
