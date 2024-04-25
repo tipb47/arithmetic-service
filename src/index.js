@@ -22,32 +22,3 @@ app.get('/add/:n/:m', (req, res) => {
   }); 
  
 app.listen(port);
-
-
-app.get('/sub/:n/:m', (req, res) =>{
-    let n = Number(req.params.n);
-    let m = Number(req.params.m);
-    let diff = subtract(n, m);
-    res.json(diff);
-})
-
-app.get('/mul/:n/:m', (req, res) =>{
-    let n = Number(req.params.n);
-    let m = Number(req.params.m);
-    let prod = multiply(n, m);
-    res.json(prod);
-})
-
-app.get('/div/:n/:m', (req, res) =>{
-    let n = Number(req.params.n);
-    let m = Number(req.params.m);
-    let quo = divide(n, m);
-    res.json(quo);
-})
-
-app.get('/prime/:n', (req, res) => {
-    
-    res.json();
-})
-
-app.listen(port);
