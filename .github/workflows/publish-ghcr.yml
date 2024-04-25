@@ -1,37 +1,36 @@
 name: Docker Image CI for GHCR
 
 on:
-    push
+  push:
 
 jobs:
-    build_and_publish:
-        runs-on: ubuntu-latest
-	env:
-	  VERSION: ${{ github.sha }}
-	  CONTAINER_REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-	  CONTAINER_REGISTRY_UN: ${{ secrets.CONTAINER_REGISTRY_UN }}
-	  CONTAINER_REGISTRY_PW: ${{ secrets.CONTAINER_REGISTRY_PW }}
-        steps:
-            - uses: actions/checkout@v3
-            - name: npm install
-              run: npm ci
-            - name: run the unit tests
-              run: npm test
-            - name: Publish the image to github container registry
-              run: |
-                docker login --username tipb47 --password ${{secrets.ACCESS_TOKEN}} ghcr.io
-                docker build -t ghcr.io/tipb47/arithmetic-service:1 --file Dockerfile .  
-                docker push ghcr.io/tipb47/arithmetic-service:1 
-            - name: Publish the image to azure container registry
-              run: |
-                docker login --username $CONTAINER_REGISTRY_UN --password $CONTAINER_REGISTRY_PW $CONTAINER_REGISTRY
-                docker tag ghcr.io/tipb47/arithmetic-service:$VERSION   $CONTAINER_REGISTRY/arithmetic-service:$VERSION
-                docker push $CONTAINER_REGISTRY/arithmetic-service:$VERSION
+  build_and_publish:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.sha }}
+      CONTAINER_REGISTRY: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+      CONTAINER_REGISTRY_UN: ${{ secrets.CONTAINER_REGISTRY_UN }}
+      CONTAINER_REGISTRY_PW: ${{ secrets.CONTAINER_REGISTRY_PW }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: npm install
+        run: npm ci
+      - name: run the unit tests
+        run: npm test
+      - name: Publish the image to github container registry
+        run: |
+          docker login --username tipb47 --password ${{secrets.ACCESS_TOKEN}} ghcr.io
+          docker build -t ghcr.io/tipb47/arithmetic-service:1 --file Dockerfile .
+          docker push ghcr.io/tipb47/arithmetic-service:1 
+      - name: Publish the image to azure container registry
+        run: |
+          docker login --username $CONTAINER_REGISTRY_UN --password $CONTAINER_REGISTRY_PW $CONTAINER_REGISTRY
+          docker tag ghcr.io/tipb47/arithmetic-service:$VERSION $CONTAINER_REGISTRY/arithmetic-service:$VERSION
+          docker push $CONTAINER_REGISTRY/arithmetic-service:$VERSION
+      - uses: tale/kubectl-action@v1
+        with:
+          base64-kube-config: ${{ secrets.KUBE_CONFIG }}
+      - name: Deploy
+        run: ./deploy.sh
 
-	    - uses: tale/kubectl-action@v1
-	      with:
-		  base64-kube-config ${{ secrets.KUBE_CONFIG }}
-
-	    - name: Deploy
-	      run: ./deploy.sh
 
